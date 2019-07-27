@@ -14,8 +14,9 @@ class MarioMaker:
     def __init__(self):
         config = configparser.ConfigParser()
         config.read('marioMakerSettings.txt')
-        self.enableMarioMakerCommands = bool(config['MarioMakerSettings']['enableMarioMakerCommands'])
-        self.maxQueueSize = int(config['MarioMakerSettings']['maxQueueSize'])
+        marioMakerSettings = config['MarioMakerSettings']
+        self.enableMarioMakerCommands = bool(marioMakerSettings.get('enableMarioMakerCommands', "0"))
+        self.maxQueueSize = int(marioMakerSettings.get('maxQueueSize', "5"))
         self.rankList = []
         self.queueOpen = False
         self.queue = []

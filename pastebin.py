@@ -6,10 +6,11 @@ class Pastebin:
     def __init__(self):
         config = configparser.ConfigParser()
         config.read('pastebinSettings.txt')
-        self.apiDevKey = config['PastebinSettings']['apiDevKey']
-        self.apiUserKey = config['PastebinSettings']['apiUserKey']
+        pastebinSettings = config['PastebinSettings']
+        self.apiDevKey = pastebinSettings.get('apiDevKey', "")
+        self.apiUserKey = pastebinSettings.get('apiUserKey', "")
         self.url = 'http://pastebin.com/api/api_post.php'
-        self.pastebinPrivacy = int(config['PastebinSettings']['pastebinPrivacy'])
+        self.pastebinPrivacy = int(pastebinSettings.get('pastebinPrivacy', "0"))
 
     # Method for posting to pastebin, returns the URL of the pastebin
     def makePastebin(self, title, content):

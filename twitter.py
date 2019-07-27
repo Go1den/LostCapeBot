@@ -11,18 +11,19 @@ class Twitter:
     def __init__(self, twitchChannel):
         config = configparser.ConfigParser()
         config.read('twitterSettings.txt')
+        twitterSettings = config['TwitterSettings']
         self.twitchChannel = twitchChannel
         self.cfg = {
-            "consumer_key": config['TwitterSettings']['consumerKey'],
-            "consumer_secret": config['TwitterSettings']['consumerSecret'],
-            "access_token": config['TwitterSettings']['accessToken'],
-            "access_token_secret": config['TwitterSettings']['accessTokenSecret']
+            "consumer_key": twitterSettings.get('consumerKey', ""),
+            "consumer_secret": twitterSettings.get('consumerSecret', ""),
+            "access_token": twitterSettings.get('accessToken', ""),
+            "access_token_secret": twitterSettings.get('accessTokenSecret', "")
         }
-        self.clientID = config['TwitterSettings']['clientID']
-        self.clientSecret = config['TwitterSettings']['clientSecret']  # might be unused
-        self.accessToken = config['TwitterSettings']['oauth']
+        self.clientID = twitterSettings.get('clientID', "")
+        self.clientSecret = twitterSettings.get('clientSecret', "")  # might be unused
+        self.accessToken = twitterSettings.get('oauth', "")
         self.headers = {'Accept': 'application/vnd.twitchtv.v3+json', 'Authorization': 'OAuth ' + self.accessToken, 'Client-ID': self.clientID}
-        self.enableTwitterCommands = bool(config['TwitterSettings']['enableTwitterCommands'])
+        self.enableTwitterCommands = bool(twitterSettings.get('enableTwitterCommands', "0"))
 
     def get_api(self):
         auth = tweepy.OAuthHandler(self.cfg['consumer_key'], self.cfg['consumer_secret'])
