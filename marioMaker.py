@@ -114,10 +114,10 @@ class MarioMaker:
             self.queueSummary += "\n" + "Viewer Rating: " + chatRank + " (" + str(
                 len(self.rankList)) + " viewers voting)"
             self.resetRankList()
-        self.nextStage = ["Go1den", message.split()[1]]
-        fileHandler.writeToFile('currentLevel.txt', 'w', "  Golden's Choice: " + message.split()[1] + "  ")
-        ci.sendMessage("Now playing Golden's choice: " + message.split()[1])
-        self.queueSummary += "\n\n" + "Golden's choice: " + message.split()[1]
+        self.nextStage = [ci.channel.capitalize(), message.split()[1]]
+        fileHandler.writeToFile('currentLevel.txt', 'w', "  " + ci.channel.capitalize() + "'s Choice: " + message.split()[1] + "  ")
+        ci.sendMessage("Now playing " + ci.channel.capitalize() + "'s choice: " + message.split()[1])
+        self.queueSummary += "\n\n" + ci.channel.capitalize() + "'s choice: " + message.split()[1]
 
     def nameCurrentLevel(self, message):
         self.queueSummary += "\n" + message[6:]
