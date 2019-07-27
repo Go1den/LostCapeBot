@@ -3,23 +3,33 @@
 #Set to 1 to enable Twitter commands. Set to 0 to disable.
 enableTwitterCommands = 1
 
-#This is your consumer key on Twitter
+#YOU WILL NEED TO UPDATE ALL OF THE FOLLOWING FIELDS OR THE BOT WILL NOT WORK!!
+#To start with, you need to create a new "App" on Twitter. Go to developer.twitter.com and follow the instructions.
+#You will need to copy the "Keys and Tokens" from the new app you created.
+
+#This is your CONSUMER API KEY on the Twitter app you just made
 consumerKey = yourConsumerKeyGoesHere
 
-#This is your consumer secret on Twitter
+#This is your CONSUMER API SECRET KEY on the Twitter app you just made
 consumerSecret = yourConsumerSecretGoesHere
 
-#This is your access token on Twitter
+#This is your ACCESS TOKEN on the Twitter app you just made
 accessToken = yourAccessTokenGoesHere
 
-#This is your access secret on Twitter
+#This is your ACCESS TOKEN SECRET on the Twitter app you just made
 accessTokenSecret = yourAccessTokenSecretGoesHere
 
-#This is your client ID on Twitter
+#YOU WILL NEED TO UPDATE ALL OF THE FOLLOWING FIELDS OR THE BOT WILL NOT WORK!!
+#Now, you need to create an app on Twitch as well.
+#This will allow the bot to grab your Twitch stream title and tweet it for you.
+#Go to dev.twitch.tv and follow the instructions to create a new app.
+#You will then need to copy your new app's information below.
+
+#This is your Client ID on the Twitch app you just made
 clientID = yourClientIDGoesHere
 
-#This is your client secret on Twitter
+#This is your Client Secret on the Twitch app you just made
 clientSecret = yourClientSecretGoesHere
 
-#This is your twitter's oauth
+#This is your Oauth password on the Twitch app you just made
 oauth = yourOauthGoesHere
