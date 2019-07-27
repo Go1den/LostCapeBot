@@ -6,14 +6,9 @@ ci = connectionInfo.ConnectionInfo()
 mm = marioMaker.MarioMaker()
 tw = twitter.Twitter(ci.channel)
 
-# Method for sending a message
-def sendMessage(message):
-    ci.socket.send(bytes("PRIVMSG #" + ci.channel + " :" + message + "\r\n", "UTF-8"))
-    print(ci.nick + ": " + message)
-
 def parseBroadcasterMessage(message):
     if message == "!goodbye":
-        sendMessage("I uhh die- I died!")
+        ci.sendMessage("I uhh die- I died!")
         ci.socket.close()
         exit(1)
     elif tw.processBroadcasterCommands(message, ci):
@@ -32,7 +27,7 @@ ci.socket.send(bytes("PASS " + ci.password + "\r\n", "UTF-8"))
 ci.socket.send(bytes("NICK " + ci.nick + "\r\n", "UTF-8"))
 ci.socket.send(bytes("JOIN #" + ci.channel + " \r\n", "UTF-8"))
 
-sendMessage(ci.nick + " is online!")
+ci.sendMessage(ci.nick + " is online!")
 
 while True:
     line = str(ci.socket.recv(1024))
