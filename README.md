@@ -8,3 +8,5 @@ connectionSettings.txt
 pastebinSettings.txt
 
 twitterSettings.txt
+
+I have very thoroughly detailed the steps necessary to get the bot running in each of these txt files. Please read them carefully.
