@@ -1,0 +1,25 @@
+[ConnectionSettings]
+
+#This is the IRC server. By default, it is irc.chat.twitch.tv
+host = irc.chat.twitch.tv
+
+#This is the port to connect to. By default, it is 6667.
+port = 6667
+
+#YOU NEED TO UPDATE ALL OF THE FIELDS BELOW OR THE BOT WILL NOT FUNCTION.
+
+#Twitch account you own that will serve as the "Bot". You need to update this.
+botTwitchName = yourBotTwitchChannelHere
+
+#This is the oauth password for the "Bot" Twitch account you just listed above.
+#Typically looks like oauth:bunchofnumbersandletters
+botOauthPassword = yourBotOauthHere
+
+#This is the Twitch channel you want the bot to join.
+#You have to be the owner of this channel.
+#It must be ALL LOWERCASE.
+joinTwitchChannelLowercaseOnly = yourTwitchChannelHere
+
+#This is the oauth password for the Twitch account you just listed above.
+#Typically looks like oauth:bunchofnumbersandletters
+joinTwitchChannelOauthPassword = yourOauthHere

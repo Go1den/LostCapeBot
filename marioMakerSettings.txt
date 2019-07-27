@@ -1,0 +1,7 @@
+[MarioMakerSettings]
+
+#Set this to 0 to disable Mario Maker commands. Set this to 1 to enable.
+enableMarioMakerCommands = 1
+
+#The maximum number of levels the queue will take before closing automatically. Default is 5.
+maxQueueSize = 5

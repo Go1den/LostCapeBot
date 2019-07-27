@@ -1,0 +1,9 @@
+[PastebinSettings]
+#This is your API Dev Key on Pastebin.com. You can obtain this at https://pastebin.com/api.php
+apiDevKey = yourApiDevKeyGoesHere
+
+#This is your API User Key on Pastebin.com. Use this form to find it https://pastebin.com/api/api_user_key.html
+apiUserKey = yourApiUserKeyGoesHere
+
+#This setting chooses your pastebin visibility level. public = 0, unlisted = 1, private = 2
+pastebinPrivacy = 0

@@ -1,0 +1,25 @@
+[TwitterSettings]
+
+#Set to 1 to enable Twitter commands. Set to 0 to disable.
+enableTwitterCommands = 1
+
+#This is your consumer key on Twitter
+consumerKey = yourConsumerKeyGoesHere
+
+#This is your consumer secret on Twitter
+consumerSecret = yourConsumerSecretGoesHere
+
+#This is your access token on Twitter
+accessToken = yourAccessTokenGoesHere
+
+#This is your access secret on Twitter
+accessTokenSecret = yourAccessTokenSecretGoesHere
+
+#This is your client ID on Twitter
+clientID = yourClientIDGoesHere
+
+#This is your client secret on Twitter
+clientSecret = yourClientSecretGoesHere
+
+#This is your twitter's oauth
+oauth = yourOauthGoesHere
