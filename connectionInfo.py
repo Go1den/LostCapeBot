@@ -15,7 +15,7 @@ class ConnectionInfo:
         self.channeloauth = connectionSettings.get('joinTwitchChannelOauthPassword')
         self.socket = socket.socket()
 
-    # Method for sending a message to the channel
+    # Method for sending a message to the IRC channel
     def sendMessage(self, message):
         self.socket.send(bytes("PRIVMSG #" + self.channel + " :" + message + "\r\n", "UTF-8"))
         print(self.nick + ": " + message)

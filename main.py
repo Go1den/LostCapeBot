@@ -20,8 +20,7 @@ def parseUserMessage(message, username):
     if mm.processUserCommands(message, username, ci):
         return
 
-# Connecting to Twitch IRC by passing credentials and joining a certain channel
-# s = socket.socket()
+# Connecting to Twitch IRC
 ci.socket.connect((ci.host, ci.port))
 ci.socket.send(bytes("PASS " + ci.password + "\r\n", "UTF-8"))
 ci.socket.send(bytes("NICK " + ci.nick + "\r\n", "UTF-8"))
@@ -36,8 +35,8 @@ while True:
 
 while True:
     for line in ci.socket.recv(1024).decode().split('\\r\\n'):
-        parts = line.split(":")  # Splits the given string so we can work with it better
-        if "PING" in parts[0]:  # Checks whether the message is PING because its a method of Twitch to check if you're afk
+        parts = line.split(":")
+        if "PING" in parts[0]:
             print(line[1])
             ci.socket.send(bytes("PONG %s\r\n" % parts[1], "UTF-8"))
         if len(parts) < 3:

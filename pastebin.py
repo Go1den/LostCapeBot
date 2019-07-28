@@ -12,7 +12,7 @@ class Pastebin:
         self.url = 'http://pastebin.com/api/api_post.php'
         self.pastebinPrivacy = int(pastebinSettings.get('pastebinPrivacy', "0"))
 
-    # Method for posting to pastebin, returns the URL of the pastebin
+    # Method for posting to pastebin, returns the URL of the created pastebin
     def makePastebin(self, title, content):
         pastebin_vars = dict(
             api_option='paste',
