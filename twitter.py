@@ -40,7 +40,7 @@ class Twitter:
 
     def tweetStream(self, ci):
         twitterapi = self.get_api()
-        tweet = self.getStreamTitle(ci.channel)
+        tweet = self.getStreamTitle(ci)
         twitterapi.update_status(status=tweet)
         return tweet
 
