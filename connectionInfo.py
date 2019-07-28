@@ -11,8 +11,8 @@ class ConnectionInfo:
         self.port = int(connectionSettings.get('port', "6667"))
         self.nick = connectionSettings.get('botTwitchName', "")
         self.password = connectionSettings.get('botOauthPassword', "")
-        self.channel = connectionSettings.get('joinTwitchChannelLowercaseOnly')
-        self.channeloauth = connectionSettings.get('joinTwitchChannelOauthPassword')
+        self.channel = connectionSettings.get('joinTwitchChannelLowercaseOnly', "")
+        self.channeloauth = connectionSettings.get('joinTwitchChannelOauthPassword', "")
         self.socket = socket.socket()
 
     # Method for sending a message to the IRC channel
