@@ -5,8 +5,9 @@ import requests
 import tweepy
 
 import messageConstants
+from abstractChatCommands import AbstractChatCommands
 
-class Twitter:
+class Twitter(AbstractChatCommands):
 
     def __init__(self, twitchChannel):
         config = configparser.ConfigParser()
@@ -61,3 +62,7 @@ class Twitter:
                 return False
         else:
             return False
+
+    def processUserCommands(self, message, username, ci):
+        # Method is defined to be consistent with the abstract, but there are no user commands for Twitter currently
+        return

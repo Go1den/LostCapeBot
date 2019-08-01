@@ -8,8 +8,9 @@ import time
 import fileHandler
 import messageConstants
 import pastebin
+from abstractChatCommands import AbstractChatCommands
 
-class MarioMaker:
+class MarioMaker(AbstractChatCommands):
 
     def __init__(self):
         config = configparser.ConfigParser()

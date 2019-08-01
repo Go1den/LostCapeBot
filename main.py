@@ -3,22 +3,26 @@ import marioMaker
 import twitter
 
 ci = connectionInfo.ConnectionInfo()
-mm = marioMaker.MarioMaker()
-tw = twitter.Twitter(ci.channel)
+
+marioMakerModule = marioMaker.MarioMaker()
+twitterModule = twitter.Twitter(ci.channel)
+
+modules = [marioMakerModule, twitterModule]
 
 def parseBroadcasterMessage(message):
     if message == "!goodbye":
         ci.sendMessage("I uhh die- I died!")
         ci.socket.close()
         exit(1)
-    elif tw.processBroadcasterCommands(message, ci):
-        return
-    elif mm.processBroadcasterCommands(message, ci):
-        return
+    else:
+        for module in modules:
+            if module.processBroadcasterCommands(message, ci):
+                return
 
 def parseUserMessage(message, username):
-    if mm.processUserCommands(message, username, ci):
-        return
+    for module in modules:
+        if module.processUserCommands(message, username, ci):
+            return
 
 # Connecting to Twitch IRC
 ci.socket.connect((ci.host, ci.port))
