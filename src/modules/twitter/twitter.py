@@ -4,8 +4,8 @@ import time
 import requests
 import tweepy
 
-from modules.abstractChatCommands import AbstractChatCommands
-from modules.twitter import twitterMessageConstants
+from src.modules.abstractChatCommands import AbstractChatCommands
+from src.modules.twitter import twitterMessageConstants
 
 class Twitter(AbstractChatCommands):
 
