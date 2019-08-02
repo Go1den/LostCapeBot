@@ -1,6 +1,6 @@
-import connectionInfo
-import marioMaker
-import twitter
+from modules.mariomaker import marioMaker
+from modules.twitchirc import connectionInfo
+from modules.twitter import twitter
 
 ci = connectionInfo.ConnectionInfo()
 

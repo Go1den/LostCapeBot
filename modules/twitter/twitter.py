@@ -4,8 +4,8 @@ import time
 import requests
 import tweepy
 
-import messageConstants
-from abstractChatCommands import AbstractChatCommands
+from modules.abstractChatCommands import AbstractChatCommands
+from modules.twitter import twitterMessageConstants
 
 class Twitter(AbstractChatCommands):
 
@@ -51,12 +51,12 @@ class Twitter(AbstractChatCommands):
                 try:
                     tweet = self.tweetStream(ci)
                     print("Tweeted this message: " + tweet)
-                    ci.sendMessage(messageConstants.TWEET_SUCCESS)
+                    ci.sendMessage(twitterMessageConstants.TWEET_SUCCESS)
                 except Exception as inst:
                     print(type(inst))
                     print(inst.args)
                     print(inst)
-                    ci.sendMessage(messageConstants.TWEET_FAILURE)
+                    ci.sendMessage(twitterMessageConstants.TWEET_FAILURE)
                 return True
             else:
                 return False

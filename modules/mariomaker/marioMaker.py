@@ -6,9 +6,9 @@ import threading
 import time
 
 import fileHandler
-import messageConstants
-import pastebin
-from abstractChatCommands import AbstractChatCommands
+from modules.abstractChatCommands import AbstractChatCommands
+from modules.mariomaker import marioMakerMessageConstants
+from modules.pastebin import pastebin
 
 class MarioMaker(AbstractChatCommands):
 
@@ -30,16 +30,16 @@ class MarioMaker(AbstractChatCommands):
 
     def openQueue(self, ci):
         self.queueOpen = True
-        ci.sendMessage(messageConstants.QUEUE_OPEN)
+        ci.sendMessage(marioMakerMessageConstants.QUEUE_OPEN)
 
     def closeQueue(self, ci):
         self.queueOpen = False
-        ci.sendMessage(messageConstants.QUEUE_CLOSED)
+        ci.sendMessage(marioMakerMessageConstants.QUEUE_CLOSED)
         fileHandler.writeToFile('queueOpen.txt', 'w', "")
 
     def clearQueue(self, ci):
         self.queue = []
-        ci.sendMessage(messageConstants.QUEUE_CLEARED)
+        ci.sendMessage(marioMakerMessageConstants.QUEUE_CLEARED)
 
     def queueOpenThread(self):
         while True:
@@ -88,10 +88,10 @@ class MarioMaker(AbstractChatCommands):
                 ci.sendMessage(username + ", your level was added to the queue in position #" + str(position) + "!")
                 if len(self.queue) >= self.maxQueueSize:
                     self.queueOpen = False
-                    ci.sendMessage(messageConstants.QUEUE_CLOSED)
+                    ci.sendMessage(marioMakerMessageConstants.QUEUE_CLOSED)
                     fileHandler.writeToFile('queueOpen.txt', 'w', "")
         else:
-            ci.sendMessage(messageConstants.QUEUE_CLOSED)
+            ci.sendMessage(marioMakerMessageConstants.QUEUE_CLOSED)
 
     def nextInQueue(self, ci):
         try:
@@ -106,7 +106,7 @@ class MarioMaker(AbstractChatCommands):
             fileHandler.writeToFile('currentLevel.txt', 'w', "  " + self.nextStage[1] + "  ")
             self.queueSummary += "\n\n" + self.nextStage[0] + "'s submission: " + self.nextStage[1]
         except:
-            ci.sendMessage(messageConstants.QUEUE_EMPTY)
+            ci.sendMessage(marioMakerMessageConstants.QUEUE_EMPTY)
 
     def playLevelNotInQueue(self, message, ci):
         if not self.rankListIsEmpty():
@@ -168,7 +168,7 @@ class MarioMaker(AbstractChatCommands):
 
     def removeFromQueue(self, username, ci):
         self.queue = [x for x in self.queue if x[0] != username]
-        ci.sendMessage(messageConstants.QUEUE_REMOVEDUSER)
+        ci.sendMessage(marioMakerMessageConstants.QUEUE_REMOVEDUSER)
 
     def writeToPastebin(self, ci):
         try:
@@ -178,7 +178,7 @@ class MarioMaker(AbstractChatCommands):
             ci.sendMessage("Summary of today's streamed levels: " + pastebinURL)
             self.queueSummary = ""
         except:
-            ci.sendMessage(messageConstants.PASTEBIN_FAILURE)
+            ci.sendMessage(marioMakerMessageConstants.PASTEBIN_FAILURE)
 
     def processBroadcasterCommands(self, message, ci):
         if message == "!open":
