@@ -5,10 +5,10 @@ import textwrap
 import threading
 import time
 
-import fileHandler
-from modules.abstractChatCommands import AbstractChatCommands
-from modules.mariomaker import marioMakerMessageConstants
-from modules.pastebin import pastebin
+from src import fileHandler
+from src.modules.abstractChatCommands import AbstractChatCommands
+from src.modules.mariomaker import marioMakerMessageConstants
+from src.modules.pastebin import pastebin
 
 class MarioMaker(AbstractChatCommands):
 
