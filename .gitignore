@@ -1,5 +1,5 @@
-modules/twitchirc/connectionSettings.txt
-modules/pastebin/pastebinSettings.txt
-modules/twitter/twitterSettings.txt
-modules/mariomaker/currentLevel.txt
-modules/mariomaker/queueOpen.txt
+src/modules/twitchirc/connectionSettings.txt
+src/modules/pastebin/pastebinSettings.txt
+src/modules/twitter/twitterSettings.txt
+src/modules/mariomaker/currentLevel.txt
+src/modules/mariomaker/queueOpen.txt
