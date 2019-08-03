@@ -46,21 +46,25 @@ class Twitter(AbstractChatCommands):
         return tweet
 
     def processBroadcasterCommands(self, message, ci):
-        if self.enableTwitterCommands:
-            if message == "!tweet":
-                try:
-                    tweet = self.tweetStream(ci)
-                    print("Tweeted this message: " + tweet)
-                    ci.sendMessage(twitterMessageConstants.TWEET_SUCCESS)
-                except Exception as inst:
-                    print(type(inst))
-                    print(inst.args)
-                    print(inst)
-                    ci.sendMessage(twitterMessageConstants.TWEET_FAILURE)
-                return True
+        try:
+            if self.enableTwitterCommands:
+                if message == "!tweet":
+                    try:
+                        tweet = self.tweetStream(ci)
+                        print("Tweeted this message: " + tweet)
+                        ci.sendMessage(twitterMessageConstants.TWEET_SUCCESS)
+                    except Exception as inst:
+                        print(type(inst))
+                        print(inst.args)
+                        print(inst)
+                        ci.sendMessage(twitterMessageConstants.TWEET_FAILURE)
+                    return True
+                else:
+                    return False
             else:
                 return False
-        else:
+        except:
+            print(twitterMessageConstants.ERROR_BROADCASTER_COMMANDS)
             return False
 
     def processUserCommands(self, message, username, ci):
