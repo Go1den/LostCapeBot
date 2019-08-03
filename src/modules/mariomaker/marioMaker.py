@@ -181,45 +181,54 @@ class MarioMaker(AbstractChatCommands):
             ci.sendMessage(marioMakerMessageConstants.PASTEBIN_FAILURE)
 
     def processBroadcasterCommands(self, message, ci):
-        if message == "!open":
-            self.openQueue(ci)
-            return True
-        if message == "!close":
-            self.closeQueue(ci)
-            return True
-        if message == "!clear":
-            self.clearQueue(ci)
-            return True
-        if message.startswith("!size") and len(message.split()) == 2:
-            self.setMaxQueueSize(message.split()[1], ci)
-            return True
-        if message == "!next":
-            self.nextInQueue(ci)
-            return True
-        if message.startswith("!id"):
-            self.playLevelNotInQueue(message, ci)
-            return True
-        if message.startswith("!name"):
-            self.nameCurrentLevel(message)
-            return True
-        if message == "!summary":
-            self.writeToPastebin(ci)
-            return True
-        else:
+        try:
+            if message == "!open":
+                self.openQueue(ci)
+                return True
+            if message == "!close":
+                self.closeQueue(ci)
+                return True
+            if message == "!clear":
+                self.clearQueue(ci)
+                return True
+            if message.startswith("!size") and len(message.split()) == 2:
+                self.setMaxQueueSize(message.split()[1], ci)
+                return True
+            if message == "!next":
+                self.nextInQueue(ci)
+                return True
+            if message.startswith("!id"):
+                self.playLevelNotInQueue(message, ci)
+                return True
+            if message.startswith("!name"):
+                self.nameCurrentLevel(message)
+                return True
+            if message == "!summary":
+                self.writeToPastebin(ci)
+                return True
+            else:
+                return False
+        except:
+            print(marioMakerMessageConstants.ERROR_BROADCASTER_COMMANDS)
             return False
 
     def processUserCommands(self, message, username, ci):
-        if message.startswith('!add') or message.startswith('!submit'):
-            self.addToQueue(message, username, ci)
-            return True
-        if message.startswith('!update'):
-            self.validateLevelAndUpdateQueue(message, username, ci)
-            return True
-        if message == "!cancel" or message == "!remove":
-            self.removeFromQueue(username, ci)
-            return True
-        if (message.startswith('!rank') or message.startswith('!rate')) and len(message.split()) == 2:
-            self.addToRankList(username, int(message.split()[1]))
-            return True
-        else:
+        try:
+            if message.startswith('!add') or message.startswith('!submit'):
+                self.addToQueue(message, username, ci)
+                return True
+            if message.startswith('!update'):
+                self.validateLevelAndUpdateQueue(message, username, ci)
+                return True
+            if message == "!cancel" or message == "!remove":
+                self.removeFromQueue(username, ci)
+                return True
+            if (message.startswith('!rank') or message.startswith('!rate')) and len(message.split()) == 2:
+                #TODO: Fix the bug with int parsing here
+                self.addToRankList(username, int(message.split()[1]))
+                return True
+            else:
+                return False
+        except:
+            print(marioMakerMessageConstants.ERROR_USER_COMMANDS)
             return False
