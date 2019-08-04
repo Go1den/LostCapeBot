@@ -1,15 +1,20 @@
 import statistics
 
 from src import fileHandler
+from src.modules.mariomaker.marioMakerOCR import MarioMakerOCR
 
 class MarioMakerLevel:
 
     def __init__(self, submitter="", id=""):
         self.name = ""
+        self.maker = ""
+        self.description = ""
+        self.clearRate = ""
+        self.worldRecord = ""
+        self.wrHolder = ""
         self.id = id
         self.rankList = []
         self.submitter = submitter
-        self.maker = ""
         self.rank = ""
 
     def setName(self, name):
@@ -50,11 +55,33 @@ class MarioMakerLevel:
         else:
             print("Invalid rank attempt by " + user)
 
+    def getMaker(self):
+        return " created by " + self.maker if self.maker != "" else ""
+
     def getLevelSummary(self):
         resultString = ""
         resultString += self.submitter + "'s submission: " + self.id + "\n"
         if self.name != "":
-            resultString += self.name + "\n"
+            resultString += self.name + self.getMaker() + "\n"
+        if self.description != "":
+            resultString += self.description + "\n"
+        if self.clearRate != "":
+            resultString += "Clear Rate: " + self.clearRate + "\n"
         if not self.rankListIsEmpty():
             resultString += "Viewer Rating: " + self.rank + " (" + str(len(self.rankList)) + " viewers voting)" + "\n"
         return resultString + "\n"
+
+    def getOCRData(self):
+        marioMakerOCR = MarioMakerOCR()
+        if marioMakerOCR.levelName != "":
+            self.name = marioMakerOCR.levelName
+        if marioMakerOCR.levelMaker != "":
+            self.maker = marioMakerOCR.levelMaker
+        if marioMakerOCR.levelDescription != "":
+            self.description = marioMakerOCR.levelDescription
+        if marioMakerOCR.levelClearRate != "":
+            self.clearRate = marioMakerOCR.levelClearRate
+        if marioMakerOCR.levelWorldRecord != "":
+            self.worldRecord = marioMakerOCR.levelWorldRecord
+        if marioMakerOCR.levelWRHolder != "":
+            self.wrHolder = marioMakerOCR.levelWRHolder

@@ -17,6 +17,7 @@ class MarioMaker(AbstractChatCommands):
         marioMakerSettings = config['MarioMakerSettings']
         self.enableMarioMakerCommands = bool(marioMakerSettings.get('enableMarioMakerCommands', "0"))
         self.maxQueueSize = int(marioMakerSettings.get('maxQueueSize', "5"))
+        self.enableOCR = bool(marioMakerSettings.get('enableOCR', "0"))
         self.queueOpen = False
         self.queue = []
         self.queueSummary = ""
@@ -163,6 +164,8 @@ class MarioMaker(AbstractChatCommands):
             if message == "!summary":
                 self.writeToPastebin(ci)
                 return True
+            if self.enableOCR and message == "!ocr" and self.currentLevel is not None:
+                self.currentLevel.getOCRData()
             else:
                 return False
         except:

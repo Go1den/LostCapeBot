@@ -5,3 +5,6 @@ enableMarioMakerCommands = 1
 
 #The maximum number of levels the queue will take before closing automatically. Default is 5.
 maxQueueSize = 5
+
+#Set this to 1 to enable OCR (screen reading of level information). By default, it is 0 as this is experimental and could crash the bot.
+enableOCR = 0
