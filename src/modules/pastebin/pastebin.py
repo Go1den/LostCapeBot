@@ -5,7 +5,7 @@ class Pastebin:
 
     def __init__(self):
         config = configparser.ConfigParser()
-        config.read('pastebinSettings.txt')
+        config.read('src/modules/pastebin/pastebinSettings.txt')
         pastebinSettings = config['PastebinSettings']
         self.apiDevKey = pastebinSettings.get('apiDevKey', "")
         self.apiUserKey = pastebinSettings.get('apiUserKey', "")

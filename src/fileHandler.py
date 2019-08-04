@@ -1,3 +1,6 @@
 def writeToFile(file, mode, message):
-    with open(file, mode) as myfile:
-        myfile.write(message)
+    try:
+        with open(file, mode) as myfile:
+            myfile.write(message)
+    except:
+        print("Failed to write to file " + file)
