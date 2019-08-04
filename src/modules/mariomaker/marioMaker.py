@@ -1,31 +1,28 @@
 import configparser
 import datetime
-import statistics
-import textwrap
 import threading
 import time
 
 from src import fileHandler
 from src.modules.abstractChatCommands import AbstractChatCommands
-from src.modules.mariomaker import marioMakerMessageConstants
+from src.modules.mariomaker import marioMakerMessageConstants, marioMakerHelperMethods
+from src.modules.mariomaker.marioMakerLevel import MarioMakerLevel
 from src.modules.pastebin import pastebin
 
 class MarioMaker(AbstractChatCommands):
 
     def __init__(self):
         config = configparser.ConfigParser()
-        config.read('marioMakerSettings.txt')
+        config.read('src/modules/mariomaker/marioMakerSettings.txt')
         marioMakerSettings = config['MarioMakerSettings']
         self.enableMarioMakerCommands = bool(marioMakerSettings.get('enableMarioMakerCommands', "0"))
         self.maxQueueSize = int(marioMakerSettings.get('maxQueueSize', "5"))
-        self.rankList = []
         self.queueOpen = False
         self.queue = []
         self.queueSummary = ""
-        self.levelSummary = ""
-        self.nextStage = ""
-        fileHandler.writeToFile('currentLevel.txt', 'w', "")
-        fileHandler.writeToFile('queueOpen.txt', 'w', "")
+        self.currentLevel = None
+        fileHandler.writeToFile('src/modules/mariomaker/currentLevel.txt', 'w', "")
+        fileHandler.writeToFile('src/modules/mariomaker/queueOpen.txt', 'w', "")
         self.startThread()
 
     def openQueue(self, ci):
@@ -35,7 +32,7 @@ class MarioMaker(AbstractChatCommands):
     def closeQueue(self, ci):
         self.queueOpen = False
         ci.sendMessage(marioMakerMessageConstants.QUEUE_CLOSED)
-        fileHandler.writeToFile('queueOpen.txt', 'w', "")
+        fileHandler.writeToFile('src/modules/mariomaker/queueOpen.txt', 'w', "")
 
     def clearQueue(self, ci):
         self.queue = []
@@ -44,10 +41,10 @@ class MarioMaker(AbstractChatCommands):
     def queueOpenThread(self):
         while True:
             if self.queueOpen:
-                fileHandler.writeToFile('queueOpen.txt', 'w', "  The queue is open!  ")
+                fileHandler.writeToFile('src/modules/mariomaker/queueOpen.txt', 'w', "  The queue is open!  ")
                 time.sleep(5)
             if self.queueOpen:
-                fileHandler.writeToFile('queueOpen.txt', 'w', "  Type !add in chat!  ")
+                fileHandler.writeToFile('src/modules/mariomaker/queueOpen.txt', 'w', "  Type !add in chat!  ")
                 time.sleep(5)
 
     def startThread(self):
@@ -55,119 +52,78 @@ class MarioMaker(AbstractChatCommands):
         queueOpenThread.start()
 
     def setMaxQueueSize(self, size, ci):
-        self.maxQueueSize = size
-        ci.sendMessage("The queue length has been adjusted to " + size + " levels.")
-
-    def resetRankList(self):
-        self.rankList = []
-
-    def rankListIsEmpty(self):
-        return len(self.rankList) == 0
-
-    def validateUserNotAlreadyInRankList(self, user):
-        for rank in self.rankList:
-            if rank[0] == user:
-                return False
-        return True
-
-    def calculateChatRank(self):
-        chatRank = str(round(statistics.mean([rank[1] for rank in self.rankList]), 2))
-        return chatRank + " out of 5"
-
-    def addToRankList(self, user, score):
-        if score in [1, 2, 3, 4, 5] and self.validateUserNotAlreadyInRankList(user):
-            print(user + " ranked this course " + str(score) + " out of 5")
-            self.rankList.append([user, score])
-        else:
-            print("Invalid rank attempt by " + user)
+        if size.isnumeric():
+            self.maxQueueSize = int(size)
+            ci.sendMessage("The queue length has been adjusted to " + size + " levels.")
 
     def addToQueue(self, message, username, ci):
         if self.queueOpen:
-            if self.validateLevelAndAddToQueue(message, username):
+            if self.validateLevelAndAddToQueue(message, username, ci):
                 position = len(self.queue)
                 ci.sendMessage(username + ", your level was added to the queue in position #" + str(position) + "!")
                 if len(self.queue) >= self.maxQueueSize:
                     self.queueOpen = False
                     ci.sendMessage(marioMakerMessageConstants.QUEUE_CLOSED)
-                    fileHandler.writeToFile('queueOpen.txt', 'w', "")
+                    fileHandler.writeToFile('src/modules/mariomaker/queueOpen.txt', 'w', "")
         else:
             ci.sendMessage(marioMakerMessageConstants.QUEUE_CLOSED)
 
     def nextInQueue(self, ci):
         try:
-            if not self.rankListIsEmpty():
-                chatRank = self.calculateChatRank()
-                ci.sendMessage("Chat's Course Rating: " + chatRank)
-                self.queueSummary += "\n" + "Viewer Rating: " + chatRank + " (" + str(
-                    len(self.rankList)) + " viewers voting)"
-                self.resetRankList()
-            self.nextStage = self.queue.pop(0)
-            ci.sendMessage("Now playing " + self.nextStage[0] + "'s submission: " + self.nextStage[1])
-            fileHandler.writeToFile('currentLevel.txt', 'w', "  " + self.nextStage[1] + "  ")
-            self.queueSummary += "\n\n" + self.nextStage[0] + "'s submission: " + self.nextStage[1]
+            if self.currentLevel is not None:
+                self.currentLevel.sendCourseRatingChatMessage(ci)
+                self.queueSummary += self.currentLevel.getLevelSummary()
+            self.currentLevel = self.queue.pop(0)
+            self.currentLevel.sendNowPlayingChatMessageAndUpdateLevelFile(ci)
         except:
             ci.sendMessage(marioMakerMessageConstants.QUEUE_EMPTY)
 
     def playLevelNotInQueue(self, message, ci):
-        if not self.rankListIsEmpty():
-            chatRank = self.calculateChatRank()
-            ci.sendMessage("Chat's Course Rating: " + chatRank)
-            self.queueSummary += "\n" + "Viewer Rating: " + chatRank + " (" + str(
-                len(self.rankList)) + " viewers voting)"
-            self.resetRankList()
-        self.nextStage = [ci.channel.capitalize(), message.split()[1]]
-        fileHandler.writeToFile('currentLevel.txt', 'w', "  " + ci.channel.capitalize() + "'s Choice: " + message.split()[1] + "  ")
-        ci.sendMessage("Now playing " + ci.channel.capitalize() + "'s choice: " + message.split()[1])
-        self.queueSummary += "\n\n" + ci.channel.capitalize() + "'s choice: " + message.split()[1]
+        try:
+            if self.currentLevel is not None:
+                self.currentLevel.sendCourseRatingChatMessage(ci)
+                self.queueSummary += self.currentLevel.getLevelSummary()
+            self.currentLevel = MarioMakerLevel(ci.channel.capitalize(), message.split()[1])
+            self.currentLevel.sendNowPlayingChatMessageAndUpdateLevelFile(ci)
+        except:
+            ci.sendMessage(marioMakerMessageConstants.ERROR_PLAYING_LEVEL_NOT_IN_QUEUE)
 
-    def nameCurrentLevel(self, message):
-        self.queueSummary += "\n" + message[6:]
-        fileHandler.writeToFile('currentLevel.txt', 'w', "  " + message[6:] + "  " + self.nextStage[1] + "  ")
-
-    def validateLevelAndAddToQueue(self, message, username):
-        if self.validateUserNotAlreadyInQueue(username) and len(message.split()) > 1:
-            levelCode = message.split()[1].replace("-", "")
-            print("Stripped level code: " + levelCode)
-            if self.validateLevelCode(levelCode):
-                self.queue.append([username, self.padLevelCode(levelCode)])
-                return True
-            else:
-                return False
+    def validateLevelAndAddToQueue(self, message, username, ci):
+        try:
+            if self.validateUserNotAlreadyInQueue(username) and len(message.split()) > 1:
+                levelCode = message.split()[1].replace("-", "")
+                if marioMakerHelperMethods.validateLevelCode(levelCode):
+                    self.queue.append(MarioMakerLevel(username, marioMakerHelperMethods.padLevelCode(levelCode)))
+                    return True
+                else:
+                    return False
+        except:
+            ci.sendMessage(marioMakerMessageConstants.ERROR_INVALID_SUBMISSION)
 
     def validateLevelAndUpdateQueue(self, message, username, ci):
-        if not self.validateUserNotAlreadyInQueue(username) and len(message.split()) > 1:
-            levelCode = message.split()[1].replace("-", "")
-            print("Stripped level code: " + levelCode)
-            if self.validateLevelCode(levelCode):
-                for x in self.queue:
-                    if x[0] == username:
-                        x[1] = self.padLevelCode(levelCode)
-                ci.sendMessage(username + ", your level code was updated successfully!")
-                return True
-            else:
-                return False
+        try:
+            if not self.validateUserNotAlreadyInQueue(username) and len(message.split()) > 1:
+                levelCode = message.split()[1].replace("-", "")
+                if marioMakerHelperMethods.validateLevelCode(levelCode):
+                    for level in self.queue:
+                        if level.submitter == username:
+                            level.id = marioMakerHelperMethods.padLevelCode(levelCode)
+                    ci.sendMessage(username + ", your level code was updated successfully!")
+                    return True
+                else:
+                    return False
+        except:
+            ci.sendMessage(marioMakerMessageConstants.ERROR_INVALID_SUBMISSION)
 
     def validateUserNotAlreadyInQueue(self, username):
         for level in self.queue:
-            if level[0] == username:
-                print(username + " already in queue.")
+            if level.submitter == username:
+                print(username + " is already in the queue.")
                 return False
         return True
 
-    def validateLevelCode(self, levelCode):
-        if len(levelCode) == 9 and levelCode.isalnum():
-            return True
-        else:
-            print("Invalid level code! " + levelCode)
-            return False
-
-    def padLevelCode(self, levelCode):
-        segmentsOfLevelCode = textwrap.wrap(levelCode, 3)
-        print("Level code: " + '-'.join(segmentsOfLevelCode))
-        return '-'.join(segmentsOfLevelCode).upper()
-
     def removeFromQueue(self, username, ci):
-        self.queue = [x for x in self.queue if x[0] != username]
+        self.queue = [level for level in self.queue if level.submitter != username]
         ci.sendMessage(marioMakerMessageConstants.QUEUE_REMOVEDUSER)
 
     def writeToPastebin(self, ci):
@@ -200,8 +156,9 @@ class MarioMaker(AbstractChatCommands):
             if message.startswith("!id"):
                 self.playLevelNotInQueue(message, ci)
                 return True
-            if message.startswith("!name"):
-                self.nameCurrentLevel(message)
+            if message.startswith("!name") and len(message) > 5:
+                if self.currentLevel is not None:
+                    self.currentLevel.setName(message[6:])
                 return True
             if message == "!summary":
                 self.writeToPastebin(ci)
@@ -224,8 +181,8 @@ class MarioMaker(AbstractChatCommands):
                 self.removeFromQueue(username, ci)
                 return True
             if (message.startswith('!rank') or message.startswith('!rate')) and len(message.split()) == 2:
-                #TODO: Fix the bug with int parsing here
-                self.addToRankList(username, int(message.split()[1]))
+                if self.currentLevel is not None:
+                    self.currentLevel.addToRankList(username, message.split()[1])
                 return True
             else:
                 return False

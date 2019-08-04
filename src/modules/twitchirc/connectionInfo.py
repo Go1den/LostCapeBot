@@ -5,7 +5,7 @@ class ConnectionInfo:
 
     def __init__(self):
         config = configparser.ConfigParser()
-        config.read('connectionSettings.txt')
+        config.read('src/modules/twitchirc/connectionSettings.txt')
         connectionSettings = config['ConnectionSettings']
         self.host = connectionSettings.get('host', "irc.chat.twitch.tv")
         self.port = int(connectionSettings.get('port', "6667"))

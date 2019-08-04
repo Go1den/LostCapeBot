@@ -11,7 +11,7 @@ class Twitter(AbstractChatCommands):
 
     def __init__(self, twitchChannel):
         config = configparser.ConfigParser()
-        config.read('twitterSettings.txt')
+        config.read('src/modules/twitter/twitterSettings.txt')
         twitterSettings = config['TwitterSettings']
         self.twitchChannel = twitchChannel
         self.cfg = {
