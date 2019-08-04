@@ -47,14 +47,6 @@ class MarioMakerOCR:
                     levelWRHolder = ocrim.crop((382, 505, 515, 531))
                     levelCode = ocrim.crop((778, 486, 961, 527))
                 ocrim.close()
-                levelName.save('levelName.png')
-                # levelLikesAndPlays.save('levelLikesAndPlays.png')
-                levelMaker.save('levelMaker.png')
-                levelDescription.save('levelDescription.png')
-                levelClearRate.save('levelClearRate.png')
-                levelWorldRecord.save('levelWorldRecord.png')
-                levelWRHolder.save('levelWRHolder.png')
-                levelCode.save('levelCode.png')
                 if self.levelName == "" and pytesseract.image_to_string(levelName) != "":
                     self.levelName = pytesseract.image_to_string(levelName)
                 # if self.levelLikesAndPlays == "" and pytesseract.image_to_string(levelLikesAndPlays) != "":
@@ -62,7 +54,7 @@ class MarioMakerOCR:
                 if self.levelMaker == "" and pytesseract.image_to_string(levelMaker) != "":
                     self.levelMaker = pytesseract.image_to_string(levelMaker)
                 if self.levelDescription == "" and pytesseract.image_to_string(levelDescription) != "":
-                    self.levelDescription = pytesseract.image_to_string(levelDescription)
+                    self.levelDescription = pytesseract.image_to_string(levelDescription).replace('\n', ' ')
                 if self.levelClearRate == "" and pytesseract.image_to_string(levelClearRate) != "" and "%" in pytesseract.image_to_string(levelClearRate):
                     self.levelClearRate = pytesseract.image_to_string(levelClearRate)
                 if self.levelWorldRecord == "" and pytesseract.image_to_string(levelWorldRecord) != "":
