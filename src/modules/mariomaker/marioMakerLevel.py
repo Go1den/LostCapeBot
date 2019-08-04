@@ -85,3 +85,4 @@ class MarioMakerLevel:
             self.worldRecord = marioMakerOCR.levelWorldRecord
         if marioMakerOCR.levelWRHolder != "":
             self.wrHolder = marioMakerOCR.levelWRHolder
+        self.updateCurrentLevelFile()
