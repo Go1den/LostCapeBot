@@ -24,7 +24,7 @@ class Twitter(AbstractChatCommands):
         self.clientSecret = twitterSettings.get('clientSecret', "")  # might be unused
         self.accessToken = twitterSettings.get('oauth', "")
         self.headers = {'Accept': 'application/vnd.twitchtv.v3+json', 'Authorization': 'OAuth ' + self.accessToken, 'Client-ID': self.clientID}
-        self.enableTwitterCommands = bool(twitterSettings.get('enableTwitterCommands', "0"))
+        self.enableTwitterCommands = bool(int(twitterSettings.get('enableTwitterCommands', "0")))
 
     def get_api(self):
         auth = tweepy.OAuthHandler(self.cfg['consumer_key'], self.cfg['consumer_secret'])

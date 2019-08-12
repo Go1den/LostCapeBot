@@ -15,9 +15,9 @@ class MarioMaker(AbstractChatCommands):
         config = configparser.ConfigParser()
         config.read('src/modules/mariomaker/marioMakerSettings.txt')
         marioMakerSettings = config['MarioMakerSettings']
-        self.enableMarioMakerCommands = bool(marioMakerSettings.get('enableMarioMakerCommands', "0"))
+        self.enableMarioMakerCommands = bool(int(marioMakerSettings.get('enableMarioMakerCommands', "0")))
         self.maxQueueSize = int(marioMakerSettings.get('maxQueueSize', "5"))
-        self.enableOCR = bool(marioMakerSettings.get('enableOCR', "0"))
+        self.enableOCR = bool(int(marioMakerSettings.get('enableOCR', "0")))
         self.queueOpen = False
         self.queue = []
         self.queueSummary = ""
