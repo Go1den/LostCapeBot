@@ -27,8 +27,8 @@ class MarioMaker(AbstractChatCommands):
         self.queue = []
         self.queueSummary = ""
         self.currentLevel = None
-        fileHandler.writeToFile(FILE_CURRENTLEVEL, 'w', "")
-        fileHandler.writeToFile(FILE_QUEUEOPEN, 'w', "")
+        fileHandler.writeToFile(FILE_CURRENTLEVEL, "")
+        fileHandler.writeToFile(FILE_QUEUEOPEN, "")
         self.startThread()
 
     def openQueue(self, ci):
@@ -38,7 +38,7 @@ class MarioMaker(AbstractChatCommands):
     def closeQueue(self, ci):
         self.queueOpen = False
         ci.sendMessage(marioMakerMessageConstants.QUEUE_CLOSED)
-        fileHandler.writeToFile(FILE_QUEUEOPEN, 'w', "")
+        fileHandler.writeToFile(FILE_QUEUEOPEN, "")
 
     def clearQueue(self, ci):
         self.queue = []
@@ -48,10 +48,10 @@ class MarioMaker(AbstractChatCommands):
     def queueOpenThread(self):
         while True:
             if self.queueOpen:
-                fileHandler.writeToFile(FILE_QUEUEOPEN, 'w', "  The queue is open!  ")
+                fileHandler.writeToFile(FILE_QUEUEOPEN, "  The queue is open!  ")
                 time.sleep(5)
             if self.queueOpen:
-                fileHandler.writeToFile(FILE_QUEUEOPEN, 'w', "  Type !add in chat!  ")
+                fileHandler.writeToFile(FILE_QUEUEOPEN, "  Type !add in chat!  ")
                 time.sleep(5)
 
     def startThread(self):
@@ -69,7 +69,7 @@ class MarioMaker(AbstractChatCommands):
         for level in self.queue:
             queueString += str(idx) + '. ' + level.submitter + '    ' + level.id + '\n'
             idx += 1
-        fileHandler.writeToFile(FILE_QUEUE, 'w', queueString)
+        fileHandler.writeToFile(FILE_QUEUE, queueString)
 
     def addToQueue(self, message, username, ci):
         if self.queueOpen:
@@ -80,7 +80,7 @@ class MarioMaker(AbstractChatCommands):
                 if len(self.queue) >= self.maxQueueSize:
                     self.queueOpen = False
                     ci.sendMessage(marioMakerMessageConstants.QUEUE_CLOSED)
-                    fileHandler.writeToFile(FILE_QUEUEOPEN, 'w', "")
+                    fileHandler.writeToFile(FILE_QUEUEOPEN, "")
         else:
             ci.sendMessage(marioMakerMessageConstants.QUEUE_CLOSED)
 

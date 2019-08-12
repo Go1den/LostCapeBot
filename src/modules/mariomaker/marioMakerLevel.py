@@ -34,7 +34,7 @@ class MarioMakerLevel:
 
     def updateCurrentLevelFile(self):
         outputString = "  " + self.name + " " + self.id + "  " if self.name != "" else "  " + self.id + "  "
-        fileHandler.writeToFile('src/modules/mariomaker/currentLevel.txt', 'w', outputString)
+        fileHandler.writeToFile('src/modules/mariomaker/currentLevel.txt', outputString)
 
     def sendNowPlayingChatMessageAndUpdateLevelFile(self, ci):
         self.updateCurrentLevelFile()
