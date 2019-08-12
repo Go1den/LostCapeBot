@@ -9,11 +9,16 @@ from src.modules.mariomaker import marioMakerMessageConstants, marioMakerHelperM
 from src.modules.mariomaker.marioMakerLevel import MarioMakerLevel
 from src.modules.pastebin import pastebin
 
+FILE_CURRENTLEVEL = 'src/modules/mariomaker/currentLevel.txt'
+FILE_QUEUEOPEN = 'src/modules/mariomaker/queueOpen.txt'
+FILE_SETTINGS = 'src/modules/mariomaker/marioMakerSettings.txt'
+FILE_QUEUE = 'src/modules/mariomaker/queue.txt'
+
 class MarioMaker(AbstractChatCommands):
 
     def __init__(self):
         config = configparser.ConfigParser()
-        config.read('src/modules/mariomaker/marioMakerSettings.txt')
+        config.read(FILE_SETTINGS)
         marioMakerSettings = config['MarioMakerSettings']
         self.enableMarioMakerCommands = bool(int(marioMakerSettings.get('enableMarioMakerCommands', "0")))
         self.maxQueueSize = int(marioMakerSettings.get('maxQueueSize', "5"))
@@ -22,8 +27,8 @@ class MarioMaker(AbstractChatCommands):
         self.queue = []
         self.queueSummary = ""
         self.currentLevel = None
-        fileHandler.writeToFile('src/modules/mariomaker/currentLevel.txt', 'w', "")
-        fileHandler.writeToFile('src/modules/mariomaker/queueOpen.txt', 'w', "")
+        fileHandler.writeToFile(FILE_CURRENTLEVEL, 'w', "")
+        fileHandler.writeToFile(FILE_QUEUEOPEN, 'w', "")
         self.startThread()
 
     def openQueue(self, ci):
@@ -33,7 +38,7 @@ class MarioMaker(AbstractChatCommands):
     def closeQueue(self, ci):
         self.queueOpen = False
         ci.sendMessage(marioMakerMessageConstants.QUEUE_CLOSED)
-        fileHandler.writeToFile('src/modules/mariomaker/queueOpen.txt', 'w', "")
+        fileHandler.writeToFile(FILE_QUEUEOPEN, 'w', "")
 
     def clearQueue(self, ci):
         self.queue = []
@@ -43,10 +48,10 @@ class MarioMaker(AbstractChatCommands):
     def queueOpenThread(self):
         while True:
             if self.queueOpen:
-                fileHandler.writeToFile('src/modules/mariomaker/queueOpen.txt', 'w', "  The queue is open!  ")
+                fileHandler.writeToFile(FILE_QUEUEOPEN, 'w', "  The queue is open!  ")
                 time.sleep(5)
             if self.queueOpen:
-                fileHandler.writeToFile('src/modules/mariomaker/queueOpen.txt', 'w', "  Type !add in chat!  ")
+                fileHandler.writeToFile(FILE_QUEUEOPEN, 'w', "  Type !add in chat!  ")
                 time.sleep(5)
 
     def startThread(self):
@@ -64,7 +69,7 @@ class MarioMaker(AbstractChatCommands):
         for level in self.queue:
             queueString += str(idx) + '. ' + level.submitter + '    ' + level.id + '\n'
             idx += 1
-        fileHandler.writeToFile('src/modules/mariomaker/queue.txt', 'w', queueString)
+        fileHandler.writeToFile(FILE_QUEUE, 'w', queueString)
 
     def addToQueue(self, message, username, ci):
         if self.queueOpen:
@@ -75,7 +80,7 @@ class MarioMaker(AbstractChatCommands):
                 if len(self.queue) >= self.maxQueueSize:
                     self.queueOpen = False
                     ci.sendMessage(marioMakerMessageConstants.QUEUE_CLOSED)
-                    fileHandler.writeToFile('src/modules/mariomaker/queueOpen.txt', 'w', "")
+                    fileHandler.writeToFile(FILE_QUEUEOPEN, 'w', "")
         else:
             ci.sendMessage(marioMakerMessageConstants.QUEUE_CLOSED)
 
