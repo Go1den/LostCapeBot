@@ -37,6 +37,7 @@ class MarioMaker(AbstractChatCommands):
 
     def clearQueue(self, ci):
         self.queue = []
+        self.writeQueueToFile()
         ci.sendMessage(marioMakerMessageConstants.QUEUE_CLEARED)
 
     def queueOpenThread(self):
@@ -57,11 +58,20 @@ class MarioMaker(AbstractChatCommands):
             self.maxQueueSize = int(size)
             ci.sendMessage("The queue length has been adjusted to " + size + " levels.")
 
+    def writeQueueToFile(self):
+        queueString = ""
+        idx = 1
+        for level in self.queue:
+            queueString += str(idx) + '. ' + level.submitter + '    ' + level.id + '\n'
+            idx += 1
+        fileHandler.writeToFile('src/modules/mariomaker/queue.txt', 'w', queueString)
+
     def addToQueue(self, message, username, ci):
         if self.queueOpen:
             if self.validateLevelAndAddToQueue(message, username, ci):
                 position = len(self.queue)
                 ci.sendMessage(username + ", your level was added to the queue in position #" + str(position) + "!")
+                self.writeQueueToFile()
                 if len(self.queue) >= self.maxQueueSize:
                     self.queueOpen = False
                     ci.sendMessage(marioMakerMessageConstants.QUEUE_CLOSED)
@@ -75,6 +85,7 @@ class MarioMaker(AbstractChatCommands):
                 self.currentLevel.sendCourseRatingChatMessage(ci)
                 self.queueSummary += self.currentLevel.getLevelSummary()
             self.currentLevel = self.queue.pop(0)
+            self.writeQueueToFile()
             self.currentLevel.sendNowPlayingChatMessageAndUpdateLevelFile(ci)
         except:
             ci.sendMessage(marioMakerMessageConstants.QUEUE_EMPTY)
@@ -109,6 +120,7 @@ class MarioMaker(AbstractChatCommands):
                     for level in self.queue:
                         if level.submitter == username:
                             level.id = marioMakerHelperMethods.padLevelCode(levelCode)
+                            self.writeQueueToFile()
                     ci.sendMessage(username + ", your level code was updated successfully!")
                     return True
                 else:
@@ -125,6 +137,7 @@ class MarioMaker(AbstractChatCommands):
 
     def removeFromQueue(self, username, ci):
         self.queue = [level for level in self.queue if level.submitter != username]
+        self.writeQueueToFile()
         ci.sendMessage(marioMakerMessageConstants.QUEUE_REMOVEDUSER)
 
     def writeToPastebin(self, ci):
