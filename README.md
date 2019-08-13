@@ -1,13 +1,7 @@
 # LostCapeBot
 LostCapeBot is a Twitch chat bot designed to have flexibility with modules like Pastebin, Twitter, and Mario Maker.
 
-You will need to update the following settings files with your own information in order to get the bot working:
-
-connectionSettings.txt
-
-pastebinSettings.txt
-
-twitterSettings.txt
+Each module has it's own settings file. You will want to read these thoroughly and update them all in order to get the most out of this bot. I STRONGLY RECOMMEND DOING THIS FIRST.
 
 I have very thoroughly detailed the steps necessary to get the bot running in each of these txt files. Please read them carefully.
 
