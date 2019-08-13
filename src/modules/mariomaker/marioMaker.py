@@ -5,7 +5,7 @@ import time
 
 from src import fileHandler
 from src.modules.abstractChatCommands import AbstractChatCommands
-from src.modules.mariomaker import marioMakerMessageConstants, marioMakerHelperMethods
+from src.modules.mariomaker import marioMakerMessageConstants, levelCodeMethods
 from src.modules.mariomaker.marioMakerLevel import MarioMakerLevel
 from src.modules.pastebin import pastebin
 from src.modules.wordpress.wordpress import Wordpress
@@ -134,8 +134,8 @@ class MarioMaker(AbstractChatCommands):
         try:
             if self.validateUserNotAlreadyInQueue(username) and len(message.split()) > 1:
                 levelCode = message.split()[1].replace("-", "")
-                if marioMakerHelperMethods.validateLevelCode(levelCode):
-                    self.queue.append(MarioMakerLevel(username, marioMakerHelperMethods.padLevelCode(levelCode)))
+                if levelCodeMethods.validate(levelCode):
+                    self.queue.append(MarioMakerLevel(username, levelCodeMethods.pad(levelCode)))
                     return True
                 else:
                     return False
@@ -146,10 +146,10 @@ class MarioMaker(AbstractChatCommands):
         try:
             if not self.validateUserNotAlreadyInQueue(username) and len(message.split()) > 1:
                 levelCode = message.split()[1].replace("-", "")
-                if marioMakerHelperMethods.validateLevelCode(levelCode):
+                if levelCodeMethods.validate(levelCode):
                     for level in self.queue:
                         if level.submitter == username:
-                            level.id = marioMakerHelperMethods.padLevelCode(levelCode)
+                            level.id = levelCodeMethods.pad(levelCode)
                             self.writeQueueToFileAndWordpress()
                     ci.sendMessage(username + ", your level code was updated successfully!")
                     return True
