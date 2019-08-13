@@ -8,3 +8,6 @@ maxQueueSize = 5
 
 #Set this to 1 to enable OCR (screen reading of level information). By default, it is 0 as this is experimental and could crash the bot.
 enableOCR = 0
+
+#If the Wordpress module is enabled, this is the post ID of the page where you want your Mario Maker queue to exist and be updated automatically.
+marioMakerPostID = 0
