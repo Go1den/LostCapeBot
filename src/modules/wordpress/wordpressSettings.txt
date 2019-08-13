@@ -1,0 +1,14 @@
+[WordpressSettings]
+
+#Set to 1 to enable Wordpress commands. Set to 0 to disable.
+enableWordpressCommands = 0
+
+#This is your Wordpress username
+username = yourUsernameHere
+
+#This is the Wordpress password associated with the username above.
+#Recommendation is to install 'Application Passwords' plugin on Wordpress to prevent passing your plaintext password.
+password = yourPasswordHere
+
+#This is the link to your site's xmlrpc.php page. Most times it is https://www.yourdomainnamehere.com/xmlrpc.php
+url = yourXMLRPCURLhere
