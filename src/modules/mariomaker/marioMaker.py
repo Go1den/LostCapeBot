@@ -8,6 +8,7 @@ from src.modules.abstractChatCommands import AbstractChatCommands
 from src.modules.mariomaker import marioMakerMessageConstants, marioMakerHelperMethods
 from src.modules.mariomaker.marioMakerLevel import MarioMakerLevel
 from src.modules.pastebin import pastebin
+from src.modules.wordpress.wordpress import Wordpress
 
 FILE_CURRENTLEVEL = 'src/modules/mariomaker/currentLevel.txt'
 FILE_QUEUEOPEN = 'src/modules/mariomaker/queueOpen.txt'
@@ -23,6 +24,8 @@ class MarioMaker(AbstractChatCommands):
         self.enableMarioMakerCommands = bool(int(marioMakerSettings.get('enableMarioMakerCommands', "0")))
         self.maxQueueSize = int(marioMakerSettings.get('maxQueueSize', "5"))
         self.enableOCR = bool(int(marioMakerSettings.get('enableOCR', "0")))
+        self.wordpressPostID = int(marioMakerSettings.get('marioMakerPostID', "0"))
+        self.wordpress = Wordpress()
         self.queueOpen = False
         self.queue = []
         self.queueSummary = ""
@@ -30,19 +33,22 @@ class MarioMaker(AbstractChatCommands):
         fileHandler.writeToFile(FILE_CURRENTLEVEL, "")
         fileHandler.writeToFile(FILE_QUEUEOPEN, "")
         self.startThread()
+        self.writeQueueToFileAndWordpress()
 
     def openQueue(self, ci):
         self.queueOpen = True
         ci.sendMessage(marioMakerMessageConstants.QUEUE_OPEN)
+        self.writeQueueToWordpress()
 
     def closeQueue(self, ci):
         self.queueOpen = False
         ci.sendMessage(marioMakerMessageConstants.QUEUE_CLOSED)
         fileHandler.writeToFile(FILE_QUEUEOPEN, "")
+        self.writeQueueToWordpress()
 
     def clearQueue(self, ci):
         self.queue = []
-        self.writeQueueToFile()
+        self.writeQueueToFileAndWordpress()
         ci.sendMessage(marioMakerMessageConstants.QUEUE_CLEARED)
 
     def queueOpenThread(self):
@@ -63,20 +69,39 @@ class MarioMaker(AbstractChatCommands):
             self.maxQueueSize = int(size)
             ci.sendMessage("The queue length has been adjusted to " + size + " levels.")
 
+    def writeQueueToFileAndWordpress(self):
+        self.writeQueueToFile()
+        self.writeQueueToWordpress()
+
     def writeQueueToFile(self):
         queueString = ""
         idx = 1
         for level in self.queue:
-            queueString += str(idx) + '. ' + level.submitter + '    ' + level.id + '\n'
+            queueString += str(idx) + '. ' + level.submitter + ' ' + level.id + "\n"
             idx += 1
         fileHandler.writeToFile(FILE_QUEUE, queueString)
+
+    def writeQueueToWordpress(self):
+        if self.wordpress.enableWordpressCommands:
+            wpQueueString = "<table><tr><th>#</th><th>Submitter</th><th>Level ID</th></tr>"
+            idx = 1
+            for level in self.queue:
+                wpQueueString += "<tr><td>" + str(idx) + '</td><td>' + level.submitter + '</td><td>' + level.id + "</td></tr>"
+                idx += 1
+            wpQueueString += "</table>"
+            if self.queueOpen:
+                queueStatus = "<h2 style=\"color: green\">The queue is open!</h2>"
+            else:
+                queueStatus = "<h2 style=\"color: red\">The queue is closed!</h2>"
+            queueStatus += "Last updated: " + datetime.datetime.now().strftime("%Y-%m-%d    %H:%M:%S") + "\n"
+            self.wordpress.editPost('Mario Maker Queue', queueStatus + wpQueueString, self.wordpressPostID)
 
     def addToQueue(self, message, username, ci):
         if self.queueOpen:
             if self.validateLevelAndAddToQueue(message, username, ci):
                 position = len(self.queue)
                 ci.sendMessage(username + ", your level was added to the queue in position #" + str(position) + "!")
-                self.writeQueueToFile()
+                self.writeQueueToFileAndWordpress()
                 if len(self.queue) >= self.maxQueueSize:
                     self.queueOpen = False
                     ci.sendMessage(marioMakerMessageConstants.QUEUE_CLOSED)
@@ -90,7 +115,7 @@ class MarioMaker(AbstractChatCommands):
                 self.currentLevel.sendCourseRatingChatMessage(ci)
                 self.queueSummary += self.currentLevel.getLevelSummary()
             self.currentLevel = self.queue.pop(0)
-            self.writeQueueToFile()
+            self.writeQueueToFileAndWordpress()
             self.currentLevel.sendNowPlayingChatMessageAndUpdateLevelFile(ci)
         except:
             ci.sendMessage(marioMakerMessageConstants.QUEUE_EMPTY)
@@ -125,7 +150,7 @@ class MarioMaker(AbstractChatCommands):
                     for level in self.queue:
                         if level.submitter == username:
                             level.id = marioMakerHelperMethods.padLevelCode(levelCode)
-                            self.writeQueueToFile()
+                            self.writeQueueToFileAndWordpress()
                     ci.sendMessage(username + ", your level code was updated successfully!")
                     return True
                 else:
@@ -142,7 +167,7 @@ class MarioMaker(AbstractChatCommands):
 
     def removeFromQueue(self, username, ci):
         self.queue = [level for level in self.queue if level.submitter != username]
-        self.writeQueueToFile()
+        self.writeQueueToFileAndWordpress()
         ci.sendMessage(marioMakerMessageConstants.QUEUE_REMOVEDUSER)
 
     def writeToPastebin(self, ci):
