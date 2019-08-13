@@ -71,6 +71,9 @@ class MarioMakerLevel:
             resultString += "Viewer Rating: " + self.rank + " (" + str(len(self.rankList)) + " viewers voting)" + "\n"
         return resultString + "\n"
 
+    def getHTMLTableRowLevelSummary(self):
+        return "<tr><td>" + self.maker + "</td><td>" + self.name + "</td><td>" + self.id + "</td><td>" + self.description + "</td><td>" + self.clearRate + "</td><td>" + self.rank + "</td><td>" + str(len(self.rankList)) + "</td></tr>"
+
     def getOCRData(self):
         marioMakerOCR = MarioMakerOCR()
         if marioMakerOCR.levelName != "":

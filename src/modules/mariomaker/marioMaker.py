@@ -29,6 +29,7 @@ class MarioMaker(AbstractChatCommands):
         self.queueOpen = False
         self.queue = []
         self.queueSummary = ""
+        self.htmlTableRowsOfPlayedLevels = ""
         self.currentLevel = None
         fileHandler.writeToFile(FILE_CURRENTLEVEL, "")
         fileHandler.writeToFile(FILE_QUEUEOPEN, "")
@@ -81,20 +82,34 @@ class MarioMaker(AbstractChatCommands):
             idx += 1
         fileHandler.writeToFile(FILE_QUEUE, queueString)
 
+    def getQueueStatusAsHTML(self):
+        if self.queueOpen:
+            queueStatus = "<h2 style=\"color: green\">The queue is open!</h2>"
+        else:
+            queueStatus = "<h2 style=\"color: red\">The queue is closed!</h2>"
+        queueStatus += "Last updated: " + datetime.datetime.now().strftime("%Y-%m-%d    %H:%M:%S") + "\n"
+        return queueStatus
+
+    def getQueueAsHTMLTable(self):
+        wpQueueString = "<div><b>Queue</b></div><table><tr><th>#</th><th>Submitter</th><th>Level ID</th></tr>"
+        idx = 1
+        for level in self.queue:
+            wpQueueString += "<tr><td>" + str(idx) + '</td><td>' + level.submitter + '</td><td>' + level.id + "</td></tr>"
+            idx += 1
+        wpQueueString += "</table>"
+        return wpQueueString
+
+    def getPlayedLevelsAsHTMLTable(self):
+        wpPlayedLevelsString = "<div><b>Today's Completed Levels</b></div><table><tr><th>Maker</th><th>Level Name</th><th>Level ID</th><th>Description</th><th>Clear %</th><th>Rank</th><th>Votes</th></tr>"
+        wpPlayedLevelsString += self.htmlTableRowsOfPlayedLevels + "</table>"
+        return wpPlayedLevelsString
+
     def writeQueueToWordpress(self):
         if self.wordpress.enableWordpressCommands:
-            wpQueueString = "<table><tr><th>#</th><th>Submitter</th><th>Level ID</th></tr>"
-            idx = 1
-            for level in self.queue:
-                wpQueueString += "<tr><td>" + str(idx) + '</td><td>' + level.submitter + '</td><td>' + level.id + "</td></tr>"
-                idx += 1
-            wpQueueString += "</table>"
-            if self.queueOpen:
-                queueStatus = "<h2 style=\"color: green\">The queue is open!</h2>"
-            else:
-                queueStatus = "<h2 style=\"color: red\">The queue is closed!</h2>"
-            queueStatus += "Last updated: " + datetime.datetime.now().strftime("%Y-%m-%d    %H:%M:%S") + "\n"
-            self.wordpress.editPost('Mario Maker Queue', queueStatus + wpQueueString, self.wordpressPostID)
+            queueStatus = self.getQueueStatusAsHTML()
+            wpQueueString = self.getQueueAsHTMLTable()
+            wpPlayedLevelsString = self.getPlayedLevelsAsHTMLTable()
+            self.wordpress.editPost('Mario Maker Queue', queueStatus + wpQueueString + wpPlayedLevelsString, self.wordpressPostID)
 
     def addToQueue(self, message, username, ci):
         if self.queueOpen:
@@ -109,11 +124,16 @@ class MarioMaker(AbstractChatCommands):
         else:
             ci.sendMessage(marioMakerMessageConstants.QUEUE_CLOSED)
 
+    def gatherDataFromLastLevel(self, ci):
+        if self.currentLevel is not None:
+            print("Gathering data from last level...")
+            self.currentLevel.sendCourseRatingChatMessage(ci)
+            self.queueSummary += self.currentLevel.getLevelSummary()
+            self.htmlTableRowsOfPlayedLevels += self.currentLevel.getHTMLTableRowLevelSummary()
+
     def nextInQueue(self, ci):
         try:
-            if self.currentLevel is not None:
-                self.currentLevel.sendCourseRatingChatMessage(ci)
-                self.queueSummary += self.currentLevel.getLevelSummary()
+            self.gatherDataFromLastLevel(ci)
             self.currentLevel = self.queue.pop(0)
             self.writeQueueToFileAndWordpress()
             self.currentLevel.sendNowPlayingChatMessageAndUpdateLevelFile(ci)
@@ -122,10 +142,9 @@ class MarioMaker(AbstractChatCommands):
 
     def playLevelNotInQueue(self, message, ci):
         try:
-            if self.currentLevel is not None:
-                self.currentLevel.sendCourseRatingChatMessage(ci)
-                self.queueSummary += self.currentLevel.getLevelSummary()
+            self.gatherDataFromLastLevel(ci)
             self.currentLevel = MarioMakerLevel(ci.channel.capitalize(), message.split()[1])
+            self.writeQueueToWordpress()
             self.currentLevel.sendNowPlayingChatMessageAndUpdateLevelFile(ci)
         except:
             ci.sendMessage(marioMakerMessageConstants.ERROR_PLAYING_LEVEL_NOT_IN_QUEUE)
