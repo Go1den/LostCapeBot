@@ -1,5 +1,5 @@
 # LostCapeBot
-LostCapeBot is a Twitch chat bot designed to have flexibility with modules like Pastebin, Twitter, and Mario Maker.
+LostCapeBot is a Twitch chat bot designed to have flexibility with modules like Pastebin, Twitter, Wordpress, and Mario Maker.
 
 Each module has it's own settings file. You will want to read these thoroughly and update them all in order to get the most out of this bot. I STRONGLY RECOMMEND DOING THIS FIRST.
 
