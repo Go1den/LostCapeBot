@@ -25,6 +25,8 @@ class MarioMaker(AbstractChatCommands):
         self.maxQueueSize = int(marioMakerSettings.get('maxQueueSize', "5"))
         self.enableOCR = bool(int(marioMakerSettings.get('enableOCR', "0")))
         self.wordpressPostID = int(marioMakerSettings.get('marioMakerPostID', "0"))
+        self.summaryPastebin = bool(int(marioMakerSettings.get('summaryPastebin', "0")))
+        self.summaryWordpress = bool(int(marioMakerSettings.get('summaryWordpress', "0")))
         self.wordpress = Wordpress()
         self.queueOpen = False
         self.queue = []
@@ -104,12 +106,16 @@ class MarioMaker(AbstractChatCommands):
         wpPlayedLevelsString += self.htmlTableRowsOfPlayedLevels + "</table>"
         return wpPlayedLevelsString
 
+    def getCurrentLevelAsHTML(self):
+        if self.currentLevel:
+            return "<div><b>Currently playing " + self.currentLevel.submitter + "'s submission: " + self.currentLevel.name + " " + self.currentLevel.id + "</b></div><br>"
+        else:
+            return ""
+
     def writeQueueToWordpress(self):
         if self.wordpress.enableWordpressCommands:
-            queueStatus = self.getQueueStatusAsHTML()
-            wpQueueString = self.getQueueAsHTMLTable()
-            wpPlayedLevelsString = self.getPlayedLevelsAsHTMLTable()
-            self.wordpress.editPost('Mario Maker Queue', queueStatus + wpQueueString + wpPlayedLevelsString, self.wordpressPostID)
+            postContent = self.getQueueStatusAsHTML() + self.getCurrentLevelAsHTML() + self.getQueueAsHTMLTable() + self.getPlayedLevelsAsHTMLTable()
+            self.wordpress.editPost('Mario Maker Queue', postContent, self.wordpressPostID)
 
     def addToQueue(self, message, username, ci):
         if self.queueOpen:
@@ -134,7 +140,10 @@ class MarioMaker(AbstractChatCommands):
     def nextInQueue(self, ci):
         try:
             self.gatherDataFromLastLevel(ci)
-            self.currentLevel = self.queue.pop(0)
+            if self.queue:
+                self.currentLevel = self.queue.pop(0)
+            else:
+                self.currentLevel = None
             self.writeQueueToFileAndWordpress()
             self.currentLevel.sendNowPlayingChatMessageAndUpdateLevelFile(ci)
         except:
@@ -189,13 +198,23 @@ class MarioMaker(AbstractChatCommands):
         self.writeQueueToFileAndWordpress()
         ci.sendMessage(marioMakerMessageConstants.QUEUE_REMOVEDUSER)
 
-    def writeToPastebin(self, ci):
+    def postToWordpress(self, ci):
+        if self.wordpress.enableWordpressCommands:
+            try:
+                todaysDateTime = datetime.date.today().strftime("%B %d, %Y")
+                wordpressURL = self.wordpress.newPost("Mario Maker Queue from  " + todaysDateTime, self.getPlayedLevelsAsHTMLTable(), "Mario Maker")
+                if self.summaryWordpress:
+                    ci.sendMessage("Summary of today's streamed levels: " + wordpressURL)
+            except:
+                ci.sendMessage(marioMakerMessageConstants.WORDPRESS_FAILURE)
+
+    def postToPastebin(self, ci):
         try:
             todaysDateTime = datetime.date.today().strftime("%B %d, %Y")
             pb = pastebin.Pastebin()
             pastebinURL = pb.makePastebin("Mario Maker Queue from  " + todaysDateTime, self.queueSummary)
-            ci.sendMessage("Summary of today's streamed levels: " + pastebinURL)
-            self.queueSummary = ""
+            if self.summaryPastebin:
+                ci.sendMessage("Summary of today's streamed levels: " + pastebinURL)
         except:
             ci.sendMessage(marioMakerMessageConstants.PASTEBIN_FAILURE)
 
@@ -224,7 +243,9 @@ class MarioMaker(AbstractChatCommands):
                     self.currentLevel.setName(message[6:])
                 return True
             if message == "!summary":
-                self.writeToPastebin(ci)
+                self.postToPastebin(ci)
+                self.postToWordpress(ci)
+                self.queueSummary = ""
                 return True
             if self.enableOCR and message == "!ocr" and self.currentLevel is not None:
                 self.currentLevel.getOCRData()

@@ -10,5 +10,8 @@ username = yourUsernameHere
 #Recommendation is to install 'Application Passwords' plugin on Wordpress to prevent passing your plaintext password.
 password = yourPasswordHere
 
+#This is your website's base URL. Do NOT include a trailing /
+baseURL = https://www.YourDomain.com
+
 #This is the link to your site's xmlrpc.php page. Most times it is https://www.yourdomainnamehere.com/xmlrpc.php
-url = yourXMLRPCURLhere
+xmlrpcurl = https://www.YourDomain.com/xmlrpc.php
