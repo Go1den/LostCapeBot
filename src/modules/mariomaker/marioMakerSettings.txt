@@ -12,6 +12,9 @@ enableOCR = 0
 #If the Wordpress module is enabled, this is the post ID of the page where you want your Mario Maker queue to exist and be updated automatically.
 marioMakerPostID = 0
 
+#If the Wordpress module is enabled, this is the post ID of the page where you want the current level info to be displayed
+marioMakerCurrentLevelPostID = 0
+
 #If set to 1, !summary will link the summary pastebin in chat. 0 will disable this.
 summaryPastebin = 0
 
