@@ -72,7 +72,39 @@ class MarioMakerLevel:
         return resultString + "\n"
 
     def getHTMLTableRowLevelSummary(self):
-        return "<tr><td>" + self.maker + "</td><td>" + self.name + "</td><td>" + self.id + "</td><td>" + self.description + "</td><td>" + self.clearRate + "</td><td>" + self.rank + "</td><td>" + str(len(self.rankList)) + "</td></tr>"
+        return "<tr><td>" + self.maker + "</td><td>" + self.name + "</td><td>" + self.id + "</td><td>" + self.description + "</td><td>" + self.clearRate + "</td><td>" + self.rank + "</td><td>" + str(
+            len(self.rankList)) + "</td></tr>"
+
+    def truncateName(self):
+        if len(self.name) <= 20:
+            return self.name
+        else:
+            return self.name[:20] + "..."
+
+    def getValueOrNbsp(self, value):
+        if value == "":
+            return "&nbsp;"
+        else:
+            return value
+
+    def getClearRateOrNbsp(self):
+        if self.clearRate == "":
+            return "&nbsp;"
+        else:
+            return self.clearRate + " Clear Rate"
+
+    def getCurrentLevelHTML(self, queueOpen):
+        if queueOpen:
+            queueDiv = "<div style=\"color:#00EE00; font-size: 18px; line-height: normal;\">⬤ Queue Open</div>"
+        else:
+            queueDiv = "<div style=\"color:#EE0000; font-size: 18px; line-height: normal;\">⬤ Queue Closed</div>"
+        return "<div style=\"background-color:#FFFF00; padding: 50px 50px 50px 50px; width: 200px; height: 200px;\">" + \
+               "<div style=\"background-color:black; padding: 8px 8px 12px 12px; border-radius: 25px; width: 200px; height: 140px; white-space: nowrap; line-height: normal;\">" + \
+               "<div style=\"color:white; font-size: 28px; line-height: normal;\">" + self.getValueOrNbsp(self.maker) + "</div>" + \
+               "<div style=\"color:white; font-size: 18px; line-height: normal;\">" + self.getValueOrNbsp(self.truncateName()) + "</div>" + \
+               "<div style=\"color:#00FFFF; font-size: 28px; line-height: normal;\">" + self.getValueOrNbsp(self.id) + "</div>" + \
+               "<div style=\"color:white; font-size: 18px; line-height: normal;\">" + self.getClearRateOrNbsp() + "</div>" + \
+               queueDiv + "</div></div><script>setTimeout(function(){location.reload()},3000);</script>"
 
     def getOCRData(self):
         marioMakerOCR = MarioMakerOCR()

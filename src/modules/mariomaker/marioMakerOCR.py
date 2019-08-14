@@ -52,7 +52,7 @@ class MarioMakerOCR:
                 # if self.levelLikesAndPlays == "" and pytesseract.image_to_string(levelLikesAndPlays) != "":
                 # self.levelLikesAndPlays = pytesseract.image_to_string(levelLikesAndPlays)
                 if self.levelMaker == "" and pytesseract.image_to_string(levelMaker) != "":
-                    self.levelMaker = pytesseract.image_to_string(levelMaker).replace("@", "").strip()
+                    self.levelMaker = pytesseract.image_to_string(levelMaker).strip().split()[-1]
                 if self.levelDescription == "" and pytesseract.image_to_string(levelDescription) != "":
                     self.levelDescription = pytesseract.image_to_string(levelDescription).replace('\n', ' ').strip()
                 if self.levelClearRate == "" and pytesseract.image_to_string(levelClearRate) != "" and "%" in pytesseract.image_to_string(levelClearRate):
@@ -64,6 +64,7 @@ class MarioMakerOCR:
                 if self.levelCode == "" and pytesseract.image_to_string(levelCode) != "":
                     self.levelCode = pytesseract.image_to_string(levelCode).strip()
                 if self.allHaveValue():
+                    print("All OCR values populated successfully.")
                     return
                 else:
                     self.ocr(retries - 1)

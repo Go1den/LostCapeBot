@@ -3,6 +3,7 @@ QUEUE_OPEN = "The queue is now open. Use !add XXX-XXX-XXX to submit your levels.
 QUEUE_CLOSED = "The queue is now closed."
 QUEUE_EMPTY = "The queue is empty!"
 QUEUE_REMOVEDUSER = "Your level was removed from the queue."
+QUEUE_URL = "View the queue and all levels from today's stream at {}"
 PASTEBIN_FAILURE = "Error: Unable to create summary Pastebin."
 WORDPRESS_FAILURE = "Error: Unable to post to website."
 ERROR_BROADCASTER_COMMANDS = "Error processing broadcaster commands in the Mario Maker module."

@@ -25,7 +25,8 @@ class Wordpress:
             post.id = id
             post.post_status = 'publish'
             self.client.call(EditPost(post.id, post))
-        except:
+        except Exception as e:
+            print(e)
             print("Unable to edit post!")
 
     def newPost(self, title, content, category=None):
@@ -42,7 +43,8 @@ class Wordpress:
             postID = self.client.call(NewPost(post))
             wpPost = self.client.call(GetPost(postID))
             return self.baseURL + "/" + wpPost.slug
-        except:
+        except Exception as e:
+            print(e)
             print("Unable to post!")
 
 
